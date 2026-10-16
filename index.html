@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARGON-18 // Neural Primordial Soup & Particle Life Studio</title>
+  <meta name="description" content="Zero-dependency GPU-grade emergent artificial life & procedural ambient synth laboratory." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Fullscreen Simulation Canvas -->
+  <canvas id="simCanvas"></canvas>
+
+  <!-- Subtle Vignette & Scanline Overlay -->
+  <div class="crt-overlay" id="crtOverlay"></div>
+
+  <!-- Top Telemetry Bar -->
+  <header class="top-bar glass-panel">
+    <div class="brand-group">
+      <div class="argon-badge">
+        <span class="atomic-num">18</span>
+        <span class="atomic-sym">Ar</span>
+      </div>
+      <div class="brand-titles">
+        <div class="title-row">
+          <h1>ARGON-18</h1>
+          <span class="version-tag">EMERGENCE LAB v2.6</span>
+        </div>
+        <p class="subtitle">Artificial Particle Life &amp; Procedural Bio-Acoustic Synthesizer</p>
+      </div>
+    </div>
+
+    <div class="telemetry-strip">
+      <div class="metric-item">
+        <span class="metric-label">FPS</span>
+        <span class="metric-value cyan" id="fpsVal">60</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">AGENTS</span>
+        <span class="metric-value" id="agentCountVal">2,400</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">ENTROPY</span>
+        <span class="metric-value purple" id="entropyVal">0.84</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">CLUSTERS</span>
+        <span class="metric-value emerald" id="clusterVal">18</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">KE (ENERGY)</span>
+        <canvas id="energySparkline" width="90" height="26"></canvas>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button id="audioToggleBtn" class="btn btn-glow" title="Toggle Procedural WebAudio Ambient Synth (M)">
+        <span class="dot-indicator" id="audioDot"></span>
+        <span id="audioBtnText">SYNTH: OFF</span>
+      </button>
+      <button id="recordBtn" class="btn btn-record" title="Record 60fps WebM Video for Threads / SNS">
+        <span class="rec-dot"></span>
+        <span id="recordBtnText">REC CLIP</span>
+      </button>
+      <button id="zenModeBtn" class="btn btn-icon" title="Zen Mode - Hide UI (H)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Left Control Dock -->
+  <aside class="side-dock glass-panel" id="sideDock">
+    <div class="dock-header">
+      <span class="dock-title">GENOME &amp; FORCE MATRIX</span>
+      <button class="collapse-btn" id="collapseDockBtn" title="Collapse Panel">−</button>
+    </div>
+
+    <div class="dock-body" id="dockBody">
+      <!-- Curated Presets -->
+      <section class="control-section">
+        <div class="section-header">
+          <span class="section-label">CURATED ECOSYSTEMS</span>
+          <span class="section-hint">1 - 6</span>
+        </div>
+        <div class="preset-grid" id="presetGrid">
+          <button class="preset-chip active" data-preset="mitosis">01. Mitosis Cells</button>
+          <button class="preset-chip" data-preset="hunters">02. Predator-Prey</button>
+          <button class="preset-chip" data-preset="gliders">03. Plasma Gliders</button>
+          <button class="preset-chip" data-preset="symbiosis">04. Symbiotic Webs</button>
+          <button class="preset-chip" data-preset="vortex">05. Orbital Rings</button>
+          <button class="preset-chip" data-preset="chaos">06. Primordial Chaos</button>
+        </div>
+      </section>
+
+      <!-- Interactive 6x6 Force Matrix -->
+      <section class="control-section">
+        <div class="section-header">
+          <span class="section-label">6×6 SPECIES INTERACTION DNA</span>
+          <div class="mini-actions">
+            <button class="mini-btn" id="symmetricMatrixBtn" title="Generate Symmetric Crystal Rules">SYM</button>
+            <button class="mini-btn" id="cyclicMatrixBtn" title="Generate Rock-Paper-Scissors Hunting Chain">CYCLE</button>
+            <button class="mini-btn accent" id="randomMatrixBtn" title="Randomize DNA Matrix (R)">MUTATE</button>
+          </div>
+        </div>
+        <p class="matrix-help">Click/drag cells: <span class="txt-attract">+Green = Attract</span> · <span class="txt-repel">−Red = Repel</span></p>
+        <div class="matrix-wrapper">
+          <canvas id="matrixCanvas" width="244" height="244"></canvas>
+        </div>
+      </section>
+
+      <!-- Physics & Visual Sliders -->
+      <section class="control-section">
+        <div class="section-header">
+          <span class="section-label">PHYSICS PARAMETERS</span>
+          <button class="mini-btn" id="pauseSimBtn">PAUSE (SPACE)</button>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-meta">
+            <span>Population Count</span>
+            <span id="popSliderVal">2400</span>
+          </div>
+          <input type="range" id="popSlider" min="600" max="4200" step="200" value="2400" />
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-meta">
+            <span>Sense Radius (R_max)</span>
+            <span id="radiusSliderVal">95 px</span>
+          </div>
+          <input type="range" id="radiusSlider" min="45" max="170" step="5" value="95" />
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-meta">
+            <span>Force Gain</span>
+            <span id="forceSliderVal">1.15x</span>
+          </div>
+          <input type="range" id="forceSlider" min="0.2" max="2.5" step="0.05" value="1.15" />
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-meta">
+            <span>Viscosity / Friction</span>
+            <span id="frictionSliderVal">0.86</span>
+          </div>
+          <input type="range" id="frictionSlider" min="0.72" max="0.96" step="0.01" value="0.86" />
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-meta">
+            <span>Phosphor Trail Persistence</span>
+            <span id="trailSliderVal">0.88</span>
+          </div>
+          <input type="range" id="trailSlider" min="0.40" max="0.97" step="0.01" value="0.88" />
+        </div>
+      </section>
+
+      <!-- Render Mode Toggles -->
+      <section class="control-section">
+        <div class="section-header">
+          <span class="section-label">OPTICS &amp; TOPOLOGY</span>
+        </div>
+        <div class="toggle-grid">
+          <button class="toggle-pill active" id="toggleBondsBtn">Synaptic Bonds</button>
+          <button class="toggle-pill active" id="toggleGlowBtn">Plasma Halo</button>
+          <button class="toggle-pill" id="toggleVectorsBtn">Velocity Vectors</button>
+          <button class="toggle-pill active" id="toggleWrapBtn">Toroidal Wrap</button>
+        </div>
+      </section>
+
+      <!-- Genome Hash Share / Snapshot -->
+      <section class="control-section footer-section">
+        <div class="dna-box">
+          <span class="dna-label">DNA SEED</span>
+          <input type="text" id="dnaInput" readonly value="AR18-MITOSIS-9F2A" title="Click to Copy Genome Code" />
+          <button class="mini-btn" id="copyDnaBtn">COPY</button>
+        </div>
+        <div class="action-buttons-row">
+          <button class="btn btn-secondary" id="reseedPosBtn">RESEED POS (C)</button>
+          <button class="btn btn-primary" id="snapshotBtn">4K POSTER PNG (P)</button>
+        </div>
+      </section>
+    </div>
+  </aside>
+
+  <!-- Bottom Interactive Cursor Tool Bar -->
+  <footer class="bottom-bar glass-panel" id="bottomBar">
+    <div class="tool-group">
+      <span class="tool-group-label">CURSOR FIELD</span>
+      <button class="tool-btn active" data-tool="vortex" title="Swirl & Orbit Particles (L-Click)">
+        <span class="key-hint">Q</span> Orbital Vortex
+      </button>
+      <button class="tool-btn" data-tool="attract" title="Gravity Singularity Well (L-Click)">
+        <span class="key-hint">W</span> Singularity Pull
+      </button>
+      <button class="tool-btn" data-tool="repel" title="Shockwave Repulsor (L-Click)">
+        <span class="key-hint">E</span> Shockwave Push
+      </button>
+      <button class="tool-btn" data-tool="spawn" title="Inject New Hyper-Cluster (L-Click)">
+        <span class="key-hint">A</span> Inject Life
+      </button>
+      <button class="tool-btn" data-tool="slice" title="High-Velocity Plasma Stream (L-Click)">
+        <span class="key-hint">S</span> Plasma Jet
+      </button>
+    </div>
+
+    <div class="shortcut-legend">
+      <span><kbd>Drag</kbd> Interact</span>
+      <span><kbd>Wheel</kbd> Brush Radius</span>
+      <span><kbd>R</kbd> Mutate DNA</span>
+      <span><kbd>Space</kbd> Freeze</span>
+      <span><kbd>H</kbd> Zen UI</span>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastMsg">Genome Seed Copied!</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
