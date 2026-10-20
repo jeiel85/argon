@@ -706,3 +706,5 @@ kbd {
   .bottom-bar { left: 14px; }
   .shortcut-legend { display: none; }
 }
+
+.btn-icon { text-decoration: none; }
